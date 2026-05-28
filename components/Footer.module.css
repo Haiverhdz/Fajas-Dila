@@ -1,0 +1,81 @@
+.footer {
+  background: var(--clr-footer-bg);
+  color: var(--clr-footer-txt);
+  padding-top: 56px;
+}
+
+.footerInner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoMark { color: var(--clr-accent); }
+
+.logoText {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.footerTagline {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  max-width: 220px;
+}
+
+.footerCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerHeading {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.footerLink {
+  font-size: 0.875rem;
+  color: var(--clr-footer-txt);
+  transition: color var(--transition);
+}
+
+.footerLink:hover { color: #fff; }
+
+.footerWhatsapp:hover { color: #4ade80; }
+
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 20px;
+}
+
+.footerCopy {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+  .footerInner { grid-template-columns: 1fr 1fr; }
+  .footerBrand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 480px) {
+  .footerInner { grid-template-columns: 1fr; }
+  .footerBottom { flex-direction: column; gap: 6px; text-align: center; }
+}
