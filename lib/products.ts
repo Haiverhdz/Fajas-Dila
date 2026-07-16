@@ -9,7 +9,7 @@ export const products: Product[] = [
       "Short faja sin costuras que reduce tallas al instante y moldea cintura, abdomen y cadera con comodidad para uso diario.",
     longDescription:
       "Nuestro short moldeador está fabricado en tejido de alta compresión sin costuras, diseñado para acompañar tu cuerpo todo el día sin marcarse bajo la ropa. La cintura y las piernas llevan un acabado en encaje suave con banda de silicona antideslizante interior, que evita que la prenda se enrolle o se suba con el movimiento. Ideal para uso diario, después del parto o en el postoperatorio, bajo supervisión médica.",
-    price: 89900,
+    price: 130000,
     images: [
       "/images/faja-frente.webp",
       "/images/faja-frente-2.webp",
