@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: "DILA Diseño Latino | Fajas moldeadoras de uso diario",
     description:
       "Short moldeador de alta compresión sin costuras. Reduce tallas al instante y se siente cómodo todo el día.",
-    images: ["/logo-white.webp"],
+    images: ["/logo-white.png"],
   },
 };
 
