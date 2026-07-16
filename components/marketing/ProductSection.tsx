@@ -9,8 +9,8 @@ import { formatCOP } from "@/lib/utils";
 import styles from "./ProductSection.module.css";
 
 const imageAlts: Record<string, string> = {
-  "/images/faja-frente.webp": "Short moldeador DILA, vista de frente",
   "/images/faja-frente-2.webp": "Short moldeador DILA, vista de frente alternativa",
+  "/images/faja-frente.webp": "Short moldeador DILA, vista de frente",
   "/images/faja-izquierda.webp": "Short moldeador DILA, vista lateral",
   "/images/faja-cola.webp": "Short moldeador DILA, vista trasera",
   "/images/costura-faja.webp": "Detalle de la banda de silicona antideslizante",
