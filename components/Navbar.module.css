@@ -98,7 +98,47 @@
 .btnNavCta:hover {
   background: var(--clr-accent-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(46, 110, 173, 0.3);
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.3);
+}
+
+/* Cart button */
+.cartButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  color: var(--clr-text);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+
+.cartButton:hover {
+  border-color: var(--clr-accent);
+  color: var(--clr-accent);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--clr-accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 999px;
 }
 
 /* Hamburger — animado */

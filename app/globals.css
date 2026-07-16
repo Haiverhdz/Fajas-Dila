@@ -5,14 +5,15 @@
 }
 
 :root {
-  /* Paleta médico/profesional */
-  --clr-bg:          #F7F8FA;
+  /* Paleta blanco + turquesa */
+  --clr-bg:          #FAF7F5;
   --clr-surface:     #FFFFFF;
-  --clr-border:      #E2E6EC;
-  --clr-accent:      #2E6EAD;
-  --clr-accent-lt:   #EBF3FB;
-  --clr-accent-dark: #255d94;
-  --clr-text:        #1A1F2E;
+  --clr-border:      #E9E2DC;
+  --clr-accent:      #14B8A6;
+  --clr-accent-lt:   #E3F6F3;
+  --clr-accent-dark: #0F9488;
+  --clr-nude:        #E8C9B4;
+  --clr-text:        #171717;
   --clr-muted:       #6B7280;
   --clr-footer-bg:   #1A1F2E;
   --clr-footer-txt:  #CBD5E1;
@@ -96,7 +97,7 @@ img {
 .btn-primary:hover {
   background: var(--clr-accent-dark);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(46,110,173,0.35);
+  box-shadow: 0 6px 20px rgba(20,184,166,0.35);
 }
 
 .btn-outline {

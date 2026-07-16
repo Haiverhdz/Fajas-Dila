@@ -1,6 +1,17 @@
+import Hero from "@/components/marketing/Hero";
+import ProductSection from "@/components/marketing/ProductSection";
+import Benefits from "@/components/marketing/Benefits";
+import Testimonials from "@/components/marketing/Testimonials";
+import Faq from "@/components/marketing/Faq";
+
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-    </div>
+    <>
+      <Hero />
+      <ProductSection />
+      <Benefits />
+      <Testimonials />
+      <Faq />
+    </>
   );
 }

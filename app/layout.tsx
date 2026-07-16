@@ -17,10 +17,33 @@ const dmSerif = DM_Serif_Display({
   variable: "--font-display",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "FajasMed | Moldeadoras de uso diario",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "DILA Diseño Latino | Fajas moldeadoras de uso diario",
+    template: "%s | DILA Diseño Latino",
+  },
   description:
-    "Fajas moldeadoras de uso diario con respaldo médico. Comodidad, soporte y resultados.",
+    "Short moldeador de alta compresión sin costuras. Reduce tallas al instante y se siente cómodo todo el día. Hecho en Colombia.",
+  openGraph: {
+    title: "DILA Diseño Latino | Fajas moldeadoras de uso diario",
+    description:
+      "Short moldeador de alta compresión sin costuras. Reduce tallas al instante y se siente cómodo todo el día.",
+    url: siteUrl,
+    siteName: "DILA Diseño Latino",
+    images: [{ url: "/images/faja-frente.webp", width: 1080, height: 1350 }],
+    locale: "es_CO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DILA Diseño Latino | Fajas moldeadoras de uso diario",
+    description:
+      "Short moldeador de alta compresión sin costuras. Reduce tallas al instante y se siente cómodo todo el día.",
+    images: ["/images/faja-frente.webp"],
+  },
 };
 
 export default function RootLayout({

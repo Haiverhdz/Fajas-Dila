@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ShoppingBag } from "lucide-react";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  // TODO(Fase 2): reemplazar por el contador real del carrito (Zustand + localStorage)
+  const cartCount = 0;
 
   return (
     <header className={styles.navbar}>
@@ -34,6 +37,16 @@ export default function Navbar() {
         {/* CTA + hamburger */}
         <div className={styles.navbarActions}>
           <Link href="#productos" className={styles.btnNavCta}>Ver fajas</Link>
+          <button
+            type="button"
+            className={styles.cartButton}
+            aria-label={`Carrito de compras${cartCount > 0 ? `, ${cartCount} productos` : ""}`}
+          >
+            <ShoppingBag size={20} strokeWidth={1.75} />
+            {cartCount > 0 && (
+              <span className={styles.cartBadge}>{cartCount}</span>
+            )}
+          </button>
           <button
             className={styles.hamburger}
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
