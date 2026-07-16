@@ -31,7 +31,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
         >
           <Image
-            src="/images/faja-frente.webp"
+            src="/images/faja-frente-2.webp"
             alt="Modelo usando el short moldeador DILA"
             width={900}
             height={1125}
