@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag } from "lucide-react";
+import { useCartCount, useCartStore } from "@/lib/cart-store";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  // TODO(Fase 2): reemplazar por el contador real del carrito (Zustand + localStorage)
-  const cartCount = 0;
+  const cartCount = useCartCount();
+  const openDrawer = useCartStore((state) => state.openDrawer);
+
+  useEffect(() => {
+    useCartStore.persist.rehydrate();
+  }, []);
 
   return (
     <header className={styles.navbar}>
@@ -41,6 +46,7 @@ export default function Navbar() {
             type="button"
             className={styles.cartButton}
             aria-label={`Carrito de compras${cartCount > 0 ? `, ${cartCount} productos` : ""}`}
+            onClick={openDrawer}
           >
             <ShoppingBag size={20} strokeWidth={1.75} />
             {cartCount > 0 && (

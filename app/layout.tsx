@@ -3,6 +3,7 @@ import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CartDrawer from "@/components/cart/CartDrawer";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default function RootLayout({
           <main className="main-content">{children}</main>
           <Footer />
         </div>
+        <CartDrawer />
       </body>
     </html>
   );

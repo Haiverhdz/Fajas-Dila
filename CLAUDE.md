@@ -233,7 +233,7 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=
 
 **Última sesión:** 2026-07-15
 
-**Milestones completados:** Fase 1 — Landing profesional con producto destacado.
+**Milestones completados:** Fase 1 — Landing profesional con producto destacado. Fase 2 — Carrito funcional.
 
 Decisiones tomadas durante la Fase 1 (se desvían de algunas sugerencias iniciales del stack, respetando lo ya existente en el proyecto):
 
@@ -247,5 +247,13 @@ Decisiones tomadas durante la Fase 1 (se desvían de algunas sugerencias inicial
 - Se creó `.env.local.example` con las variables de Wompi/Addi (sin valores) y se ajustó `.gitignore` para permitir commitear ese archivo de ejemplo pese al patrón `.env*`.
 - El footer **no se tocó** (confirmado sin diff). El anchor `#contacto` de Navbar/Footer no tiene sección propia todavía — no se creó una sección de contacto porque no estaba en el roadmap de Fase 1.
 
-**Próximo paso al retomar:** ejecutar la Fase 2 — Carrito funcional (cart drawer, página `/carrito`, estado con Zustand + localStorage, contador real en el ícono del header que hoy está hardcodeado en 0).
+Decisiones y notas de la Fase 2:
 
+- Store de carrito en `lib/cart-store.ts` (Zustand + `persist` en localStorage, clave `dila-cart`). Usa `skipHydration: true` + `useCartStore.persist.rehydrate()` en un `useEffect` de `Navbar.tsx` para evitar mismatch de SSR/CSR — si se agrega otro componente que necesite el carrito hidratado antes que el Navbar, hay que llamar `rehydrate()` ahí también.
+- El drawer (`components/cart/CartDrawer.tsx`) vive en `app/layout.tsx` (renderizado siempre, controlado por `isOpen` del store) y usa `framer-motion` para la animación.
+- "Agregar al carrito" en `ProductSection.tsx` ya no muestra un toast local (era el placeholder de Fase 1) — ahora hace `addItem()` real y abre el drawer.
+- Página `/carrito` en `app/(checkout)/carrito/page.tsx` (route group `(checkout)` sin efecto en la URL). Por ahora Subtotal = Total, sin envío — el cálculo de envío fijo es explícitamente Fase 3.
+- Botones "Ir a pagar" (drawer y página `/carrito`) apuntan a `/checkout`, que todavía no existe — se crea en Fase 3.
+- Verificado end-to-end con Playwright headless (instalado temporalmente en el scratchpad, no quedó como dependencia del proyecto): agregar producto, validación de talla, contador del header, incrementar/decrementar cantidad, subtotal, persistencia tras reload, página `/carrito`, remover ítem. Sin errores de consola.
+
+**Próximo paso al retomar:** ejecutar la Fase 3 — Checkout + Wompi + Addi (formulario con React Hook Form + Zod, envío fijo, selector de método de pago, integración Wompi/Addi, páginas de resultado de pago). Las llaves de Wompi/Addi todavía no existen — usar `.env.local.example` como referencia y manejar el caso "no configurado" sin crashear.

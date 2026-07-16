@@ -1,15 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import {
-  Check,
-  CheckCircle2,
-  RotateCcw,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
+import { Check, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { getFeaturedProduct } from "@/lib/products";
+import { useCartStore } from "@/lib/cart-store";
 import { formatCOP } from "@/lib/utils";
 import styles from "./ProductSection.module.css";
 
@@ -32,14 +27,8 @@ export default function ProductSection() {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
-  const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    };
-  }, []);
+  const addItem = useCartStore((state) => state.addItem);
+  const openDrawer = useCartStore((state) => state.openDrawer);
 
   function handleAddToCart() {
     if (!selectedSize) {
@@ -47,9 +36,15 @@ export default function ProductSection() {
       return;
     }
     setSizeError(false);
-    setToastVisible(true);
-    if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    toastTimeout.current = setTimeout(() => setToastVisible(false), 2500);
+    addItem({
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      image: product.images[0],
+      price: product.price,
+      size: selectedSize,
+    });
+    openDrawer();
   }
 
   return (
@@ -151,13 +146,6 @@ export default function ProductSection() {
           </div>
         </div>
       </div>
-
-      {toastVisible && (
-        <div className={styles.toast} role="status">
-          <CheckCircle2 size={18} className={styles.toastIcon} />
-          {product.name} — talla {selectedSize} agregada al carrito
-        </div>
-      )}
     </section>
   );
 }
