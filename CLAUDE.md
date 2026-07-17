@@ -231,9 +231,9 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=
 
 ## Estado actual del desarrollo
 
-**Última sesión:** 2026-07-15
+**Última sesión:** 2026-07-17
 
-**Milestones completados:** Fase 1 — Landing profesional con producto destacado. Fase 2 — Carrito funcional.
+**Milestones completados:** Fase 1 — Landing profesional con producto destacado. Fase 2 — Carrito funcional. Fase 3 — Checkout + Wompi + Addi (integración de código completa; pendiente activar con llaves reales).
 
 Decisiones tomadas durante la Fase 1 (se desvían de algunas sugerencias iniciales del stack, respetando lo ya existente en el proyecto):
 
@@ -256,4 +256,17 @@ Decisiones y notas de la Fase 2:
 - Botones "Ir a pagar" (drawer y página `/carrito`) apuntan a `/checkout`, que todavía no existe — se crea en Fase 3.
 - Verificado end-to-end con Playwright headless (instalado temporalmente en el scratchpad, no quedó como dependencia del proyecto): agregar producto, validación de talla, contador del header, incrementar/decrementar cantidad, subtotal, persistencia tras reload, página `/carrito`, remover ítem. Sin errores de consola.
 
-**Próximo paso al retomar:** ejecutar la Fase 3 — Checkout + Wompi + Addi (formulario con React Hook Form + Zod, envío fijo, selector de método de pago, integración Wompi/Addi, páginas de resultado de pago). Las llaves de Wompi/Addi todavía no existen — usar `.env.local.example` como referencia y manejar el caso "no configurado" sin crashear.
+Decisiones y notas de la Fase 3:
+
+- **Pricing recalculado siempre en el servidor**: `lib/order.ts` (`buildOrderPricing`) reconstruye precio, nombre y validez de talla/cantidad contra `lib/products.ts` a partir de `{ productId, size, quantity }` que manda el cliente — nunca se confía en precio/nombre enviado por el navegador. Envío fijo (`SHIPPING_COST = 15000` en `lib/shipping.ts`, separado de `lib/order.ts` porque este último importa `crypto` de Node y no puede ser importado desde componentes cliente).
+- **Wompi** (`lib/wompi.ts` + `app/api/wompi/create-transaction` y `/webhook`): firma de integridad `SHA256(referencia + montoEnCentavos + moneda + WOMPI_INTEGRITY_SECRET)` y checksum de webhook verificados contra la documentación oficial de Wompi (docs.wompi.co) — coinciden exactamente con lo descrito en este archivo. El frontend (`CheckoutForm.tsx`) carga `https://checkout.wompi.co/widget.js` con `next/script` y abre el Widget Checkout (`WidgetCheckout`) solo si `NEXT_PUBLIC_WOMPI_PUBLIC_KEY` está seteada; el resultado (`APPROVED`/`DECLINED`/`PENDING`) llega por el callback de `checkout.open()`, sin necesitar una página intermedia de redirect.
+- **Addi** (`lib/addi.ts` + `app/api/addi/create-application` y `/webhook`): **scaffold sin verificar** — no fue posible acceder a la documentación real de la API de Addi (developers.addi.com no resuelve por DNS; el Swagger de `api-docs-sandbox.addi.com` requiere JS/acceso). El flujo OAuth2 client_credentials + `POST /v1/applications` implementado es la forma típica de una integración BNPL, pero los nombres exactos de endpoint/campos están señalados con comentarios `// TODO` / avisos en el código y **hay que confirmarlos contra la doc oficial** cuando el usuario tenga acceso aprobado (KYC) al panel de aliado, antes de ir a producción. Igual para la firma del webhook (`x-addi-signature` HMAC-SHA256 es una suposición razonable, no confirmada).
+- **Validación de formulario sin `@hookform/resolvers`**: no se agregó esa dependencia (no estaba instalada y CLAUDE.md pide justificar nuevas dependencias). En su lugar, `CheckoutForm.tsx` usa React Hook Form solo para el registro/estado de campos y valida manualmente con `customerSchema.safeParse()` (definido en `lib/checkout-schema.ts`, reusado también si se agrega validación server-side en el futuro), usando `setError` de RHF para mostrar los mensajes de Zod.
+- Campos del formulario: nombre completo, cédula, celular (regex `3\d{9}`), correo, dirección, ciudad. Ciudad se agregó (no estaba explícita en el roadmap) porque Wompi's `shippingAddress` y el envío nacional la necesitan.
+- Un solo botón de envío por método de pago (`WompiButton.tsx` / `AddiButton.tsx`, ambos `type="submit"` dentro del mismo `<form>`) — la lógica de "abrir widget" / "llamar a la API y redirigir" vive en `CheckoutForm.tsx` porque necesita `handleSubmit`, `router` y el estado del carrito; los componentes de botón son presentacionales.
+- Páginas `/pago/exito`, `/pago/error`, `/pago/pendiente` son wrappers finos (con `<Suspense>`, requerido por `useSearchParams`) de un único componente `components/checkout/PaymentStatus.tsx`. Éxito y pendiente limpian el carrito (`clearCart()`) al montar; error lo deja intacto para que el usuario pueda reintentar. Muestran la referencia (`?ref=`) si viene en la URL.
+- No hay persistencia de órdenes (no hay DB en el proyecto todavía) — los webhooks de Wompi/Addi solo validan firma y hacen `console.log` con un `// TODO` indicando dónde conectar la actualización de estado del pedido cuando exista esa capa.
+- Probado end-to-end con Playwright headless (scratchpad, no quedó como dependencia): agregar al carrito → checkout → validación de campos inválidos (6 mensajes de error correctos) → envío con Wompi/Addi sin credenciales muestra el mensaje "no configurado" (503) sin crashear → páginas `/pago/exito`, `/pago/error`, `/pago/pendiente` renderizan y muestran la referencia. `npm run build` y `eslint` pasan limpios.
+- Nota de lint: el plugin `react-hooks` de `eslint-config-next` (Next 16 / React 19.2) bloquea asignar `window.location.href = ...` dentro de un componente ("Modifying a variable defined outside a component or hook"); se usó `window.location.assign(url)` en su lugar.
+
+**Próximo paso al retomar:** conseguir llaves reales de Wompi (sandbox) y probar el Widget Checkout end-to-end con una transacción de prueba; cuando Addi apruebe el acceso de aliado, confirmar contra su documentación real los endpoints/payloads de `lib/addi.ts` y ajustar. Fuera de roadmap explícito pero pendiente a futuro: persistencia de órdenes (hoy los webhooks no tienen dónde escribir el estado del pedido) y email de confirmación con Resend (mencionado como opcional en Fase 3).

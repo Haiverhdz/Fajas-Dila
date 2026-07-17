@@ -1,0 +1,12 @@
+.payBtn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.payBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

@@ -1,0 +1,60 @@
+.selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  color: var(--clr-text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.option:hover {
+  border-color: var(--clr-accent);
+}
+
+.optionActive {
+  border-color: var(--clr-accent);
+  background: var(--clr-accent-lt);
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-body);
+}
+
+.optionText strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.optionText small {
+  font-size: 0.8rem;
+  color: var(--clr-muted);
+}
+
+.badge {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--clr-muted);
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
