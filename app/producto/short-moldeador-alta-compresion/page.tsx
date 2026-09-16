@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import ProductSection from "@/components/marketing/ProductSection";
+import { getProductBySlug } from "@/lib/products";
+
+/**
+ * Ruta legacy registrada para la validación de Addi.
+ * El catálogo vive en `/productos/[slug]`; esta URL se mantiene estable.
+ */
+const SLUG = "short-moldeador-alta-compresion";
 
 export const metadata: Metadata = {
   title: "Short Moldeador Alta Compresión",
@@ -8,5 +16,13 @@ export const metadata: Metadata = {
 };
 
 export default function ProductoPage() {
-  return <ProductSection />;
+  const product = getProductBySlug(SLUG);
+
+  if (!product) {
+    notFound();
+  }
+
+  return (
+    <ProductSection product={product} sectionId="producto" headingLevel="h1" />
+  );
 }

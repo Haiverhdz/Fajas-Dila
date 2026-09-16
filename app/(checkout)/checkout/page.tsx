@@ -16,7 +16,7 @@ export default function CheckoutPage() {
       <div className={`${styles.page} container`}>
         <div className={styles.empty}>
           <p>Tu carrito está vacío.</p>
-          <Link href="/#productos" className="btn-primary">
+          <Link href="/productos" className="btn-primary">
             Ver el short DILA
           </Link>
         </div>

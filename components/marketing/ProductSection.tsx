@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Check, RotateCcw, ShieldCheck, Truck } from "lucide-react";
-import { getFeaturedProduct } from "@/lib/products";
+import type { Product } from "@/types/product";
 import { useCartStore } from "@/lib/cart-store";
 import { formatCOP } from "@/lib/utils";
 import styles from "./ProductSection.module.css";
@@ -22,8 +22,19 @@ const trustBadges = [
   { icon: ShieldCheck, label: "Pago 100% seguro" },
 ];
 
-export default function ProductSection() {
-  const product = getFeaturedProduct();
+type ProductSectionProps = {
+  product: Product;
+  /** Ancla de la sección. En el home es `productos` (link del Navbar). */
+  sectionId?: string;
+  /** `h1` en la página de detalle, `h2` cuando va dentro del home. */
+  headingLevel?: "h1" | "h2";
+};
+
+export default function ProductSection({
+  product,
+  sectionId = "productos",
+  headingLevel: Heading = "h2",
+}: ProductSectionProps) {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
@@ -48,7 +59,7 @@ export default function ProductSection() {
   }
 
   return (
-    <section id="productos" className={styles.section}>
+    <section id={sectionId} className={styles.section}>
       <div className={`${styles.grid} container`}>
         {/* Gallery */}
         <div className={styles.gallery}>
@@ -87,7 +98,7 @@ export default function ProductSection() {
         {/* Info */}
         <div className={styles.info}>
           <div>
-            <h2 className={styles.name}>{product.name}</h2>
+            <Heading className={styles.name}>{product.name}</Heading>
             <p className={styles.price}>{formatCOP(product.price)}</p>
           </div>
 

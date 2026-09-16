@@ -17,7 +17,7 @@ export default function CarritoPage() {
         <div className={styles.empty}>
           <ShoppingBag size={48} className={styles.emptyIcon} />
           <p>Tu carrito está vacío.</p>
-          <Link href="/#productos" className="btn-primary">
+          <Link href="/productos" className="btn-primary">
             Ver el short DILA
           </Link>
         </div>
@@ -49,7 +49,7 @@ export default function CarritoPage() {
           <Link href="/checkout" className={`btn-primary ${styles.checkoutBtn}`}>
             Ir a pagar
           </Link>
-          <Link href="/#productos" className={styles.continueLink}>
+          <Link href="/productos" className={styles.continueLink}>
             Seguir comprando
           </Link>
         </div>

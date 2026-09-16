@@ -231,9 +231,9 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=
 
 ## Estado actual del desarrollo
 
-**Última sesión:** 2026-07-17
+**Última sesión:** 2026-09-16
 
-**Milestones completados:** Fase 1 — Landing profesional con producto destacado. Fase 2 — Carrito funcional. Fase 3 — Checkout + Wompi + Addi (integración de código completa; pendiente activar con llaves reales).
+**Milestones completados:** Fase 1 — Landing profesional con producto destacado. Fase 2 — Carrito funcional. Fase 3 — Checkout + Wompi + Addi (integración de código completa; pendiente activar con llaves reales). Catálogo multi-producto — grid `/productos` + detalle `/productos/[slug]`.
 
 Decisiones tomadas durante la Fase 1 (se desvían de algunas sugerencias iniciales del stack, respetando lo ya existente en el proyecto):
 
@@ -268,5 +268,15 @@ Decisiones y notas de la Fase 3:
 - No hay persistencia de órdenes (no hay DB en el proyecto todavía) — los webhooks de Wompi/Addi solo validan firma y hacen `console.log` con un `// TODO` indicando dónde conectar la actualización de estado del pedido cuando exista esa capa.
 - Probado end-to-end con Playwright headless (scratchpad, no quedó como dependencia): agregar al carrito → checkout → validación de campos inválidos (6 mensajes de error correctos) → envío con Wompi/Addi sin credenciales muestra el mensaje "no configurado" (503) sin crashear → páginas `/pago/exito`, `/pago/error`, `/pago/pendiente` renderizan y muestran la referencia. `npm run build` y `eslint` pasan limpios.
 - Nota de lint: el plugin `react-hooks` de `eslint-config-next` (Next 16 / React 19.2) bloquea asignar `window.location.href = ...` dentro de un componente ("Modifying a variable defined outside a component or hook"); se usó `window.location.assign(url)` en su lugar.
+
+Decisiones y notas del catálogo multi-producto (fuera del roadmap de 3 fases, pedido después de la Fase 3):
+
+- **`ProductSection.tsx` dejó de ser "la sección del producto destacado" y pasó a ser el bloque de producto reutilizable.** Ya no llama `getFeaturedProduct()` internamente; recibe `product: Product` como prop **requerida**, más dos props opcionales: `sectionId` (default `"productos"`, el ancla que usa el home) y `headingLevel` (`"h2"` por defecto, `"h1"` en las páginas de detalle, por SEO). La galería, el selector de talla, el `addItem()` + `openDrawer()` y los trust badges quedaron intactos — no se duplicó nada.
+- Call sites actualizados: `app/page.tsx` pasa `getFeaturedProduct()`; `app/producto/short-moldeador-alta-compresion/page.tsx` (ruta legacy del commit de validación de Addi) ahora resuelve con `getProductBySlug()` + `notFound()` en vez de renderizar el componente sin props. **Esa URL se mantiene estable a propósito** porque puede estar registrada en el panel de Addi — el catálogo nuevo vive en `/productos/[slug]`, en paralelo.
+- **Nuevo route group `(marketing)`** (antes no existía; el home sigue siendo `app/page.tsx` en la raíz, no se movió). Contiene `productos/page.tsx` (grid) y `productos/[slug]/page.tsx` (detalle), ambos Server Components — la interactividad vive solo dentro de `ProductSection`, que ya era `"use client"`.
+- El grid usa `grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))`, así que absorbe 2, 3 o N productos sin tocar CSS. Cada card muestra badge "Destacado" (`featured`) o "Agotado" (`stock <= 0`), con "Agotado" teniendo prioridad.
+- Detalle: `generateStaticParams()` pre-genera un route por producto de `lib/products.ts` (SSG, confirmado en el output de `next build`), `generateMetadata()` arma title/description/canonical/openGraph por producto, y slug inexistente → `notFound()` (404 verificado). Debajo del bloque de producto hay una sección "Sobre esta prenda" que por fin usa `longDescription` (hasta ahora el campo existía en el tipo pero no se renderizaba en ninguna parte) más un `<dl>` de specs (precio, tallas, colores si los hay, disponibilidad).
+- **Navbar:** "Productos" y el CTA "Ver fajas" pasaron de `#productos` a `/productos`, en desktop y en el menú móvil (4 links en total). Los enlaces "Ver el short DILA" / "Seguir comprando" en `/carrito` y "Ver el short DILA" en `/checkout` (los que se muestran con el carrito vacío, o para seguir comprando) también se cambiaron de `/#productos` a `/productos`. La sección del home conserva el `id="productos"`, así que los anchors que quedan (CTA del `Hero`, y los del footer que no se tocan) siguen funcionando.
+- Verificación: se inyectó temporalmente un segundo producto en `lib/products.ts`, se corrió `next build` + `next start` y se comprobó por HTTP que el grid lista ambos, que `generateStaticParams` emite las 2 rutas, que el detalle del producto nuevo renderiza `<h1>`, specs, "Agotado" y `longDescription`, y que un slug inválido da 404. Después se revirtió con `git checkout lib/products.ts` — **el array quedó con el único producto real**. `npm run build` y `eslint` pasan limpios. El footer sigue sin diff.
 
 **Próximo paso al retomar:** conseguir llaves reales de Wompi (sandbox) y probar el Widget Checkout end-to-end con una transacción de prueba; cuando Addi apruebe el acceso de aliado, confirmar contra su documentación real los endpoints/payloads de `lib/addi.ts` y ajustar. Fuera de roadmap explícito pero pendiente a futuro: persistencia de órdenes (hoy los webhooks no tienen dónde escribir el estado del pedido) y email de confirmación con Resend (mencionado como opcional en Fase 3).
