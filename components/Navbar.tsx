@@ -74,8 +74,8 @@ export default function Navbar() {
         <nav className={styles.mobileNav}>
           <Link href="/" className={styles.mobileLink} onClick={() => setOpen(false)}>Inicio</Link>
           <Link href="/productos" className={styles.mobileLink} onClick={() => setOpen(false)}>Productos</Link>
-          <Link href="#beneficios" className={styles.mobileLink} onClick={() => setOpen(false)}>Beneficios</Link>
-          <Link href="#contacto" className={styles.mobileLink} onClick={() => setOpen(false)}>Contacto</Link>
+          <Link href="/#beneficios" className={styles.mobileLink} onClick={() => setOpen(false)}>Beneficios</Link>
+          <Link href="/#contacto" className={styles.mobileLink} onClick={() => setOpen(false)}>Contacto</Link>
           <Link href="/productos" className={styles.btnMobileCta} onClick={() => setOpen(false)}>
             Ver fajas →
           </Link>
