@@ -35,8 +35,8 @@ export default function Navbar() {
         <nav aria-label="Navegación principal" className={styles.navLinks}>
           <Link href="/" className={styles.navLink}>Inicio</Link>
           <Link href="/productos" className={styles.navLink}>Productos</Link>
-          <Link href="/#beneficios" className={styles.navLink}>Beneficios</Link>
-          <Link href="/#contacto" className={styles.navLink}>Contacto</Link>
+          {/* <Link href="/#beneficios" className={styles.navLink}>Beneficios</Link>
+          <Link href="/#contacto" className={styles.navLink}>Contacto</Link> */}
         </nav>
 
         {/* CTA + hamburger */}
@@ -74,8 +74,8 @@ export default function Navbar() {
         <nav className={styles.mobileNav}>
           <Link href="/" className={styles.mobileLink} onClick={() => setOpen(false)}>Inicio</Link>
           <Link href="/productos" className={styles.mobileLink} onClick={() => setOpen(false)}>Productos</Link>
-          <Link href="/#beneficios" className={styles.mobileLink} onClick={() => setOpen(false)}>Beneficios</Link>
-          <Link href="/#contacto" className={styles.mobileLink} onClick={() => setOpen(false)}>Contacto</Link>
+          {/* <Link href="/#beneficios" className={styles.mobileLink} onClick={() => setOpen(false)}>Beneficios</Link>
+          <Link href="/#contacto" className={styles.mobileLink} onClick={() => setOpen(false)}>Contacto</Link> */}
           <Link href="/productos" className={styles.btnMobileCta} onClick={() => setOpen(false)}>
             Ver fajas →
           </Link>
