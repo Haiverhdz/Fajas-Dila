@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildOrderPricing, OrderValidationError } from "@/lib/order";
 import { createAddiApplication, isAddiConfigured } from "@/lib/addi";
+import { sanitizeUrl } from "@/lib/utils";
 import type { CustomerInfo, OrderItemInput } from "@/types/payment";
 
 export async function POST(request: Request) {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     throw error;
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
+  const siteUrl = sanitizeUrl(process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin);
 
   try {
     const application = await createAddiApplication({

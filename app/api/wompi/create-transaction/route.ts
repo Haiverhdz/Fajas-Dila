@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildOrderPricing, OrderValidationError } from "@/lib/order";
 import { buildIntegritySignature, isWompiConfigured } from "@/lib/wompi";
+import { sanitizeUrl } from "@/lib/utils";
 import type { CustomerInfo, OrderItemInput } from "@/types/payment";
 
 export async function POST(request: Request) {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
   const currency = "COP";
   const amountInCents = order.total * 100;
   const signature = buildIntegritySignature({ reference: order.reference, amountInCents, currency });
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
+  const siteUrl = sanitizeUrl(process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin);
   const { customer } = body;
 
   return NextResponse.json({
