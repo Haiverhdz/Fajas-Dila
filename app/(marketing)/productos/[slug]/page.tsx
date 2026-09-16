@@ -31,13 +31,42 @@ export async function generateMetadata({
     description: product.description,
     alternates: { canonical: `/productos/${product.slug}` },
     openGraph: {
+      // Sin `type` aquí a propósito: el tipo `OpenGraph` de Next no soporta
+      // "product" (solo article/book/music.*/profile/website/video.*), y
+      // fijarlo en "website" emitiría un og:type incorrecto para esta
+      // página. `og:type=product` real se renderiza a mano más abajo, junto
+      // con `product:price:*` — ver <ProductOpenGraphMeta />.
       title: product.name,
       description: product.description,
-      type: "website",
       url: `/productos/${product.slug}`,
       images: [{ url: product.images[0], width: 1080, height: 1350 }],
     },
   };
+}
+
+/**
+ * Open Graph namespace "product" (og:type=product + product:price:*,
+ * product:availability) — Next.js Metadata API no lo soporta de forma
+ * nativa (su tipo `OpenGraph.type` no incluye "product") y su campo `other`
+ * renderiza `<meta name="...">` en vez de `<meta property="...">`, que es
+ * lo que exige la spec de Open Graph. Por eso se renderizan como JSX crudo
+ * acá — React/Next los hoistea al <head> igual que un `<title>` anidado.
+ * Precio y disponibilidad salen de `lib/products.ts`, nada inventado.
+ * Home (`app/layout.tsx`) sigue con og:type="website" — esto es solo para
+ * la página de un producto individual.
+ */
+function ProductOpenGraphMeta({ product }: { product: Product }) {
+  return (
+    <>
+      <meta property="og:type" content="product" />
+      <meta property="product:price:amount" content={String(product.price)} />
+      <meta property="product:price:currency" content="COP" />
+      <meta
+        property="product:availability"
+        content={product.stock > 0 ? "in stock" : "out of stock"}
+      />
+    </>
+  );
 }
 
 /**
@@ -86,6 +115,8 @@ export default async function ProductoDetallePage({ params }: PageProps) {
 
   return (
     <>
+      <ProductOpenGraphMeta product={product} />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
