@@ -35,8 +35,8 @@ export default function Navbar() {
         <nav aria-label="Navegación principal" className={styles.navLinks}>
           <Link href="/" className={styles.navLink}>Inicio</Link>
           <Link href="/productos" className={styles.navLink}>Productos</Link>
-          <Link href="#beneficios" className={styles.navLink}>Beneficios</Link>
-          <Link href="#contacto" className={styles.navLink}>Contacto</Link>
+          <Link href="/#beneficios" className={styles.navLink}>Beneficios</Link>
+          <Link href="/#contacto" className={styles.navLink}>Contacto</Link>
         </nav>
 
         {/* CTA + hamburger */}
