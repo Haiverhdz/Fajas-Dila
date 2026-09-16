@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ProductSection from "@/components/marketing/ProductSection";
 import { products, getProductBySlug } from "@/lib/products";
-import { formatCOP } from "@/lib/utils";
+import { formatCOP, getSiteUrl } from "@/lib/utils";
+import type { Product } from "@/types/product";
 import styles from "./page.module.css";
 
 type PageProps = {
@@ -39,6 +40,42 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Datos estructurados Schema.org Product — solo campos que existen en
+ * `lib/products.ts`, nada inventado. Lo piden los validadores de Wompi/Addi
+ * (precio, disponibilidad, talla/color) y ayuda al rich snippet de Google.
+ * Los `image` van como URL absoluta porque JSON-LD no pasa por
+ * `metadataBase` (eso es exclusivo del Metadata API de Next).
+ */
+function buildProductJsonLd(product: Product) {
+  const siteUrl = getSiteUrl();
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    sku: product.id,
+    image: product.images.map((image) => `${siteUrl}${image}`),
+    brand: { "@type": "Brand", name: "DILA Diseño Latino" },
+    size: product.sizes.join(", "),
+    ...(product.colors && product.colors.length > 0
+      ? { color: product.colors.join(", ") }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}/productos/${product.slug}`,
+      priceCurrency: "COP",
+      price: product.price,
+      availability:
+        product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
+}
+
 export default async function ProductoDetallePage({ params }: PageProps) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
@@ -49,6 +86,13 @@ export default async function ProductoDetallePage({ params }: PageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildProductJsonLd(product)),
+        }}
+      />
+
       <div className={styles.breadcrumb}>
         <div className="container">
           <Link href="/productos" className={styles.backLink}>
