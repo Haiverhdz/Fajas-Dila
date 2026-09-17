@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -56,12 +57,14 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${dmSans.variable} ${dmSerif.variable}`}>
       <body>
-        <div className="site-wrapper">
-          <Navbar />
-          <main className="main-content">{children}</main>
-          <Footer />
-        </div>
-        <CartDrawer />
+        <SessionProvider>
+          <div className="site-wrapper">
+            <Navbar />
+            <main className="main-content">{children}</main>
+            <Footer />
+          </div>
+          <CartDrawer />
+        </SessionProvider>
       </body>
     </html>
   );

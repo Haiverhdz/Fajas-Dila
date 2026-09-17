@@ -1,4 +1,4 @@
-import type { CustomerInfo, OrderPricing } from "@/types/payment";
+import type { CustomerInfo, OrderPricing, OrderStatus } from "@/types/payment";
 
 // Integración con Addi ("compra ahora, paga después").
 // Docs: https://developers.addi.com — el panel de aliado y el sandbox
@@ -82,4 +82,28 @@ export async function createAddiApplication(params: {
   }
 
   return { applicationId: data.id, redirectUrl: applicationRedirectUrl };
+}
+
+// NO verificado contra la doc real de Addi (igual que el resto de este
+// archivo — ver nota arriba). Mapeo conservador: cualquier estado que no
+// reconozcamos cae en 'in_process' en vez de asumir aprobado/rechazado.
+// Ajustar los nombres de estado exactos cuando se confirme el payload real
+// del webhook de Addi.
+export function mapAddiStatus(status: string): OrderStatus {
+  switch (status.toLowerCase()) {
+    case "approved":
+    case "disbursed":
+    case "active":
+      return "approved";
+    case "rejected":
+    case "declined":
+    case "expired":
+    case "cancelled":
+      return "declined";
+    case "pending":
+    case "in_review":
+      return "pending";
+    default:
+      return "in_process";
+  }
 }

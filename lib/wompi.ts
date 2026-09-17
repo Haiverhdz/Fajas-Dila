@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import type { OrderStatus } from "@/types/payment";
 
 export function isWompiConfigured(): boolean {
   return Boolean(process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY && process.env.WOMPI_INTEGRITY_SECRET);
@@ -42,4 +43,19 @@ export function verifyWebhookChecksum(payload: WompiWebhookPayload): boolean {
   const raw = `${values.join("")}${payload.timestamp}${secret}`;
   const expected = createHash("sha256").update(raw).digest("hex");
   return expected.toLowerCase() === payload.signature.checksum.toLowerCase();
+}
+
+// https://docs.wompi.co/docs/colombia/eventos/ — estados posibles de una transacción.
+export function mapWompiStatus(status: string): OrderStatus {
+  switch (status) {
+    case "APPROVED":
+      return "approved";
+    case "PENDING":
+      return "pending";
+    case "DECLINED":
+    case "VOIDED":
+    case "ERROR":
+    default:
+      return "declined";
+  }
 }

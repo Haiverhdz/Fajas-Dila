@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { ShoppingBag } from "lucide-react";
 import { useCartCount, useCartStore } from "@/lib/cart-store";
 import styles from "./Navbar.module.css";
@@ -11,6 +12,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const cartCount = useCartCount();
   const openDrawer = useCartStore((state) => state.openDrawer);
+  const { data: session } = useSession();
+  const isLoggedIn = Boolean(session);
 
   useEffect(() => {
     useCartStore.persist.rehydrate();
@@ -35,6 +38,11 @@ export default function Navbar() {
         <nav aria-label="Navegación principal" className={styles.navLinks}>
           <Link href="/" className={styles.navLink}>Inicio</Link>
           <Link href="/productos" className={styles.navLink}>Productos</Link>
+          {isLoggedIn ? (
+            <Link href="/cuenta" className={styles.navLink}>Mi cuenta</Link>
+          ) : (
+            <Link href="/login" className={styles.navLink}>Iniciar sesión</Link>
+          )}
           {/* <Link href="/#beneficios" className={styles.navLink}>Beneficios</Link>
           <Link href="/#contacto" className={styles.navLink}>Contacto</Link> */}
         </nav>
@@ -74,6 +82,11 @@ export default function Navbar() {
         <nav className={styles.mobileNav}>
           <Link href="/" className={styles.mobileLink} onClick={() => setOpen(false)}>Inicio</Link>
           <Link href="/productos" className={styles.mobileLink} onClick={() => setOpen(false)}>Productos</Link>
+          {isLoggedIn ? (
+            <Link href="/cuenta" className={styles.mobileLink} onClick={() => setOpen(false)}>Mi cuenta</Link>
+          ) : (
+            <Link href="/login" className={styles.mobileLink} onClick={() => setOpen(false)}>Iniciar sesión</Link>
+          )}
           {/* <Link href="/#beneficios" className={styles.mobileLink} onClick={() => setOpen(false)}>Beneficios</Link>
           <Link href="/#contacto" className={styles.mobileLink} onClick={() => setOpen(false)}>Contacto</Link> */}
           <Link href="/productos" className={styles.btnMobileCta} onClick={() => setOpen(false)}>

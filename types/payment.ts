@@ -9,6 +9,8 @@ export type CustomerInfo = {
 
 export type PaymentMethod = "wompi" | "addi";
 
+export type OrderStatus = "pending" | "approved" | "declined" | "in_process";
+
 export type OrderItemInput = {
   productId: string;
   size: string;
@@ -31,4 +33,25 @@ export type OrderPricing = {
   shipping: number;
   total: number;
   currency: "COP";
+};
+
+// Un pedido tal como está guardado en la tabla `orders`.
+export type OrderRecord = {
+  id: number;
+  reference: string;
+  userId: number | null;
+  customerEmail: string;
+  customerName: string;
+  customerPhone: string;
+  customerCedula: string;
+  shippingAddress: string;
+  shippingCity: string;
+  items: OrderPricingItem[];
+  subtotal: number;
+  shippingCost: number;
+  total: number;
+  paymentMethod: PaymentMethod;
+  status: OrderStatus;
+  createdAt: Date;
+  updatedAt: Date;
 };

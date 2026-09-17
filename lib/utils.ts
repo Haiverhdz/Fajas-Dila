@@ -30,3 +30,15 @@ export function formatCOP(price: number): string {
     maximumFractionDigits: 0,
   }).format(price);
 }
+
+export function formatOrderDate(date: Date): string {
+  return new Intl.DateTimeFormat("es-CO", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+export const PAYMENT_METHOD_LABELS = {
+  wompi: "Wompi",
+  addi: "Addi",
+} as const;
