@@ -4,8 +4,10 @@ import styles from "./StatusBadge.module.css";
 export const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Pendiente",
   approved: "Aprobado",
-  declined: "Rechazado",
+  declined: "Declinado",
   in_process: "En proceso",
+  rejected: "Rechazado",
+  abandoned: "Abandonado",
 };
 
 export default function StatusBadge({ status }: { status: OrderStatus }) {

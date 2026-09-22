@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Script from "next/script";
-import { useCartStore } from "@/lib/cart-store";
+import { useCartStore, useCartSubtotal } from "@/lib/cart-store";
 import { customerSchema } from "@/lib/checkout-schema";
+import { SHIPPING_COST } from "@/lib/shipping";
 import type { CustomerInfo, PaymentMethod } from "@/types/payment";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import WompiButton from "./WompiButton";
@@ -28,6 +29,7 @@ export default function CheckoutForm() {
   const router = useRouter();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  const subtotal = useCartSubtotal();
   const [method, setMethod] = useState<PaymentMethod>("wompi");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -173,7 +175,7 @@ export default function CheckoutForm() {
         </div>
 
         <p className={styles.sectionTitle}>Método de pago</p>
-        <PaymentMethodSelector selected={method} onChange={setMethod} />
+        <PaymentMethodSelector selected={method} onChange={setMethod} amount={subtotal + SHIPPING_COST} />
 
         {formError && <p className={styles.formError}>{formError}</p>}
 

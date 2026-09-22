@@ -9,7 +9,10 @@ export type CustomerInfo = {
 
 export type PaymentMethod = "wompi" | "addi";
 
-export type OrderStatus = "pending" | "approved" | "declined" | "in_process";
+// 'rejected' y 'abandoned' son estados reales de Addi (confirmados por el
+// usuario contra su documentación oficial). 'in_process' no es un estado
+// que Addi envíe — se mantiene para uso interno/Wompi.
+export type OrderStatus = "pending" | "approved" | "declined" | "in_process" | "rejected" | "abandoned";
 
 export type OrderItemInput = {
   productId: string;

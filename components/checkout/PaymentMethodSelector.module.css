@@ -58,3 +58,25 @@
   padding: 3px 10px;
   white-space: nowrap;
 }
+
+.discountBadge {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--clr-accent-dark);
+  background: var(--clr-accent-lt);
+  border: 1px solid var(--clr-accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.option:disabled:hover {
+  border-color: var(--clr-border);
+}

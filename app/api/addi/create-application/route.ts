@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildOrderPricing, saveOrder, OrderValidationError } from "@/lib/order";
-import { createAddiApplication, isAddiConfigured } from "@/lib/addi";
-import { sanitizeUrl } from "@/lib/utils";
+import { createAddiApplication, getAllyConfig, isAddiConfigured } from "@/lib/addi";
+import { formatCOP, sanitizeUrl } from "@/lib/utils";
 import { auth } from "@/auth";
 import type { CustomerInfo, OrderItemInput } from "@/types/payment";
 
@@ -37,6 +37,29 @@ export async function POST(request: Request) {
     throw error;
   }
 
+  // Nunca confiar en que el frontend ya validó el rango contra
+  // PaymentMethodSelector — se repite la validación server-side con el
+  // monto recalculado (order.total), no con nada que mande el cliente.
+  let allyConfig;
+  try {
+    allyConfig = await getAllyConfig(order.total);
+  } catch (error) {
+    console.error("[addi] getAllyConfig", error);
+    return NextResponse.json(
+      { error: "No se pudo verificar la elegibilidad con Addi. Intenta de nuevo." },
+      { status: 502 }
+    );
+  }
+
+  if (!allyConfig.isActiveAlly || order.total < allyConfig.minAmount || order.total > allyConfig.maxAmount) {
+    return NextResponse.json(
+      {
+        error: `Addi solo aplica para compras entre ${formatCOP(allyConfig.minAmount)} y ${formatCOP(allyConfig.maxAmount)}.`,
+      },
+      { status: 400 }
+    );
+  }
+
   const session = await auth();
   const userId = session?.user?.id ? Number(session.user.id) : null;
 
@@ -53,7 +76,7 @@ export async function POST(request: Request) {
     const application = await createAddiApplication({
       customer: body.customer,
       order,
-      redirectUrl: `${siteUrl}/pago/pendiente?ref=${order.reference}`,
+      siteUrl,
     });
     return NextResponse.json(application);
   } catch (error) {

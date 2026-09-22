@@ -26,7 +26,9 @@ CREATE TABLE orders (
   shipping_cost INT UNSIGNED NOT NULL,
   total INT UNSIGNED NOT NULL,
   payment_method ENUM('wompi', 'addi') NOT NULL,
-  status ENUM('pending', 'approved', 'declined', 'in_process') NOT NULL DEFAULT 'pending',
+  -- 'rejected' y 'abandoned' son estados reales de Addi (confirmados contra
+  -- su documentación oficial). 'in_process' no es un estado que Addi envíe.
+  status ENUM('pending', 'approved', 'declined', 'in_process', 'rejected', 'abandoned') NOT NULL DEFAULT 'pending',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   -- Si se borra el usuario, el pedido se conserva (queda como si fuera de invitado)

@@ -15,10 +15,19 @@ const STATUS_FILTERS: { value: OrderStatus | undefined; label: string }[] = [
   { value: "pending", label: STATUS_LABELS.pending },
   { value: "approved", label: STATUS_LABELS.approved },
   { value: "declined", label: STATUS_LABELS.declined },
+  { value: "rejected", label: STATUS_LABELS.rejected },
+  { value: "abandoned", label: STATUS_LABELS.abandoned },
   { value: "in_process", label: STATUS_LABELS.in_process },
 ];
 
-const VALID_STATUSES = new Set<string>(["pending", "approved", "declined", "in_process"]);
+const VALID_STATUSES = new Set<string>([
+  "pending",
+  "approved",
+  "declined",
+  "in_process",
+  "rejected",
+  "abandoned",
+]);
 
 type PageProps = {
   searchParams: Promise<{ status?: string }>;
