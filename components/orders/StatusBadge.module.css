@@ -28,12 +28,12 @@
   color: #1e40af;
 }
 
-.rejected {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
 .abandoned {
   background: #e5e7eb;
   color: #374151;
+}
+
+.error {
+  background: #ede9fe;
+  color: #5b21b6;
 }

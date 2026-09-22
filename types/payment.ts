@@ -9,10 +9,16 @@ export type CustomerInfo = {
 
 export type PaymentMethod = "wompi" | "addi";
 
-// 'rejected' y 'abandoned' son estados reales de Addi (confirmados por el
-// usuario contra su documentación oficial). 'in_process' no es un estado
-// que Addi envíe — se mantiene para uso interno/Wompi.
-export type OrderStatus = "pending" | "approved" | "declined" | "in_process" | "rejected" | "abandoned";
+// Estado interno normalizado. 'abandoned' y 'error' son estados reales de
+// Addi (INTERNAL_ERROR) sin equivalente en Wompi — 'error' es a propósito
+// distinto de 'declined': no es que el cliente no haya calificado, es que
+// algo falló técnicamente del lado de Addi y probablemente necesita
+// seguimiento manual. 'in_process' es al revés, solo lo usa Wompi.
+export type OrderStatus = "pending" | "approved" | "declined" | "in_process" | "abandoned" | "error";
+
+// Los 6 valores crudos que Addi manda en el campo `status` del webhook
+// (confirmados contra su documentación oficial).
+export type AddiRawStatus = "APPROVED" | "PENDING" | "REJECTED" | "ABANDONED" | "DECLINED" | "INTERNAL_ERROR";
 
 export type OrderItemInput = {
   productId: string;
@@ -55,6 +61,7 @@ export type OrderRecord = {
   total: number;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
+  addiStatus: AddiRawStatus | null;
   createdAt: Date;
   updatedAt: Date;
 };

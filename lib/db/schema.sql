@@ -26,9 +26,15 @@ CREATE TABLE orders (
   shipping_cost INT UNSIGNED NOT NULL,
   total INT UNSIGNED NOT NULL,
   payment_method ENUM('wompi', 'addi') NOT NULL,
-  -- 'rejected' y 'abandoned' son estados reales de Addi (confirmados contra
-  -- su documentación oficial). 'in_process' no es un estado que Addi envíe.
-  status ENUM('pending', 'approved', 'declined', 'in_process', 'rejected', 'abandoned') NOT NULL DEFAULT 'pending',
+  -- Estado interno normalizado (mapeado desde addi_status, o desde los
+  -- estados de Wompi). 'abandoned' y 'error' son estados reales de Addi
+  -- sin equivalente en Wompi; 'in_process' es al revés (Wompi, no Addi).
+  status ENUM('pending', 'approved', 'declined', 'in_process', 'abandoned', 'error') NOT NULL DEFAULT 'pending',
+  -- Estado CRUDO tal como lo manda Addi en el webhook (columna
+  -- confirmada contra su documentación oficial: son exactamente estos 6
+  -- valores). NULL para pedidos de Wompi, o antes de que llegue el
+  -- primer webhook de Addi.
+  addi_status ENUM('APPROVED', 'PENDING', 'REJECTED', 'ABANDONED', 'DECLINED', 'INTERNAL_ERROR') NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   -- Si se borra el usuario, el pedido se conserva (queda como si fuera de invitado)

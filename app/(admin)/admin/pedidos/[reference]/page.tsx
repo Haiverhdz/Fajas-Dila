@@ -78,6 +78,12 @@ export default async function AdminPedidoDetallePage({ params }: PageProps) {
             <dt>Método</dt>
             <dd>{PAYMENT_METHOD_LABELS[order.paymentMethod]}</dd>
           </div>
+          {order.addiStatus && (
+            <div className={styles.field}>
+              <dt>Estado crudo de Addi</dt>
+              <dd>{order.addiStatus}</dd>
+            </div>
+          )}
           <div className={styles.field}>
             <dt>Última actualización</dt>
             <dd>{formatOrderDate(order.updatedAt)}</dd>

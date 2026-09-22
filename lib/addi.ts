@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { products } from "@/lib/products";
 import { getSiteUrl } from "@/lib/utils";
-import type { CustomerInfo, OrderPricing, OrderStatus } from "@/types/payment";
+import type { AddiRawStatus, CustomerInfo, OrderPricing, OrderStatus } from "@/types/payment";
 
 // Integración con Addi ("compra ahora, paga después").
 //
@@ -222,24 +222,31 @@ export async function createAddiApplication(params: {
   throw new Error(`Addi no devolvió el redirect 301 esperado (status ${response.status}): ${body}`);
 }
 
-// Estados reales confirmados por el usuario (documentación oficial de
-// Addi): approved, rejected, declined, abandoned. 'pending' e 'in_process'
-// se mantienen en el enum para el estado inicial y para Wompi
-// respectivamente, no son estados que Addi vaya a enviar.
+// Enum real y completo del campo `status` del webhook de Addi (confirmado
+// por el usuario contra su documentación oficial) — 6 valores exactos.
+// REJECTED y DECLINED se fusionan en nuestro 'declined' interno (no hay
+// necesidad hoy de distinguirle al cliente/admin un rechazo de crédito de
+// una declinación genérica). INTERNAL_ERROR es a propósito su propio
+// estado interno ('error', no 'declined'): no es que el cliente no haya
+// calificado, es una falla técnica del lado de Addi que probablemente
+// necesita seguimiento manual — así se puede distinguir en el admin.
+const ADDI_STATUS_MAP: Record<AddiRawStatus, OrderStatus> = {
+  APPROVED: "approved",
+  PENDING: "pending",
+  REJECTED: "declined",
+  DECLINED: "declined",
+  ABANDONED: "abandoned",
+  INTERNAL_ERROR: "error",
+};
+
 export function mapAddiStatus(status: string): OrderStatus {
-  switch (status.toLowerCase()) {
-    case "approved":
-      return "approved";
-    case "rejected":
-      return "rejected";
-    case "declined":
-      return "declined";
-    case "abandoned":
-      return "abandoned";
-    default:
-      // No debería pasar según la doc — se deja como 'in_process' (no se
-      // asume aprobado ni rechazado) y queda registrado en logs por quien
-      // llame a esta función.
-      return "in_process";
+  const normalized = status.toUpperCase() as AddiRawStatus;
+  const mapped = ADDI_STATUS_MAP[normalized];
+  if (!mapped) {
+    // No debería pasar según la doc (son exactamente 6 valores posibles) —
+    // se deja como 'in_process' en vez de asumir aprobado/rechazado, y
+    // queda registrado en logs por quien llame a esta función.
+    return "in_process";
   }
+  return mapped;
 }

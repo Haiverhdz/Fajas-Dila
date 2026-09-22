@@ -20,13 +20,6 @@ const STATUS_CONTENT: Record<
     message: "Addi aprobó tu compra en cuotas. Te escribiremos pronto con los detalles del envío.",
     clearsCart: true,
   },
-  rejected: {
-    variant: "error",
-    icon: XCircle,
-    title: "Addi rechazó la solicitud",
-    message: "Tu solicitud de crédito con Addi no fue aprobada. Puedes intentar con otro método de pago.",
-    clearsCart: false,
-  },
   declined: {
     variant: "error",
     icon: XCircle,
@@ -53,6 +46,14 @@ const STATUS_CONTENT: Record<
     icon: Clock3,
     title: "Confirmando tu pago",
     message: "Todavía estamos esperando la confirmación de Addi. Te avisaremos por correo o WhatsApp.",
+    clearsCart: false,
+  },
+  error: {
+    variant: "error",
+    icon: XCircle,
+    title: "Algo falló procesando tu pago",
+    message:
+      "Tuvimos un problema técnico confirmando tu pago con Addi — no es algo que hayas hecho tú. Escríbenos con tu referencia y lo revisamos.",
     clearsCart: false,
   },
 };
@@ -104,7 +105,7 @@ export default function AddiRetornoStatus({
           <Link href="/" className="btn-primary">
             Volver al inicio
           </Link>
-          {(status === "rejected" || status === "declined" || status === "abandoned") && (
+          {(status === "declined" || status === "abandoned") && (
             <Link href="/carrito" className="btn-outline">
               Volver al carrito
             </Link>

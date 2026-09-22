@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { mapAddiStatus } from "@/lib/addi";
 import { updateOrderStatus } from "@/lib/order";
+import type { AddiRawStatus } from "@/types/payment";
 
 // Autenticación confirmada por el usuario: Basic Auth con credenciales
 // separadas del client_id/client_secret de la API (se obtienen en el panel
@@ -32,19 +33,21 @@ export async function POST(request: Request) {
 
   const rawBody = await request.text();
 
-  // PENDIENTE DE CONFIRMAR: el schema exacto de lo que Addi envía aquí
-  // (`OnlineLoanApplicationCallbackRequest`, documentado en el mismo
-  // Swagger que confirmó lib/addi.ts) y de la respuesta que espera
-  // (`CallbackInformationResponse`) — el usuario los va a pegar. Por ahora
-  // se asume `status` + opcionalmente `approvedAmount` (nombres usados
-  // consistentemente en las instrucciones dadas hasta ahora) y se responde
-  // con el mismo body recibido, tal como se pidió explícitamente — pero
-  // ojo, `CallbackInformationResponse` como nombre de schema sugiere que
-  // la respuesta esperada podría tener una forma propia distinta de un
-  // eco; si es así, hay que ajustar el `return` de abajo. La referencia
-  // del pedido llega por query string (`?ref=`), no por el body — así se
+  // `status`: confirmado contra la doc oficial de Addi, son exactamente
+  // estos 6 valores (ver AddiRawStatus / mapAddiStatus en lib/addi.ts):
+  // APPROVED, PENDING, REJECTED, ABANDONED, DECLINED, INTERNAL_ERROR.
+  //
+  // PENDIENTE DE CONFIRMAR: el resto del schema exacto de lo que Addi
+  // envía aquí (`OnlineLoanApplicationCallbackRequest`) y de la respuesta
+  // que espera (`CallbackInformationResponse`) — el usuario los va a
+  // pegar. Por ahora se asume además `approvedAmount` y se responde con el
+  // mismo body recibido, tal como se pidió explícitamente — pero ojo,
+  // `CallbackInformationResponse` como nombre de schema sugiere que la
+  // respuesta esperada podría tener una forma propia distinta de un eco;
+  // si es así, hay que ajustar el `return` de abajo. La referencia del
+  // pedido llega por query string (`?ref=`), no por el body — así se
   // construyó el `callbackUrl` en createAddiApplication().
-  let payload: { status?: string; approvedAmount?: number };
+  let payload: { status?: AddiRawStatus; approvedAmount?: number };
   try {
     payload = JSON.parse(rawBody);
   } catch {
@@ -67,8 +70,10 @@ export async function POST(request: Request) {
     try {
       // updateOrderStatus es un UPDATE ... WHERE reference = ?, idempotente
       // por diseño: los reintentos de Addi (cada 30 min hasta 24h) pueden
-      // repetir este mismo UPDATE sin duplicar ni romper nada.
-      await updateOrderStatus(reference, status);
+      // repetir este mismo UPDATE sin duplicar ni romper nada. Se guarda
+      // también el status crudo de Addi (addi_status), separado de
+      // nuestro status normalizado.
+      await updateOrderStatus(reference, status, payload.status);
     } catch (error) {
       console.error("[addi webhook] updateOrderStatus", error);
       return NextResponse.json({ error: "No se pudo actualizar el pedido." }, { status: 500 });

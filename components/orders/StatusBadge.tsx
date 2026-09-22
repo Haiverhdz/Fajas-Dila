@@ -6,8 +6,8 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
   approved: "Aprobado",
   declined: "Declinado",
   in_process: "En proceso",
-  rejected: "Rechazado",
   abandoned: "Abandonado",
+  error: "Error técnico",
 };
 
 export default function StatusBadge({ status }: { status: OrderStatus }) {

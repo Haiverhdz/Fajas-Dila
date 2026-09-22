@@ -4,6 +4,7 @@ import { pool } from "@/lib/db";
 import { products } from "@/lib/products";
 import { SHIPPING_COST } from "@/lib/shipping";
 import type {
+  AddiRawStatus,
   CustomerInfo,
   OrderItemInput,
   OrderPricing,
@@ -93,15 +94,29 @@ export async function saveOrder(
   );
 }
 
-export async function updateOrderStatus(reference: string, status: OrderStatus): Promise<void> {
-  await pool.query(`UPDATE orders SET status = ? WHERE reference = ?`, [status, reference]);
+// addiStatus (el valor crudo que manda Addi, ej. "REJECTED") es opcional —
+// el webhook de Wompi sigue llamando esto sin ese tercer argumento.
+export async function updateOrderStatus(
+  reference: string,
+  status: OrderStatus,
+  addiStatus?: AddiRawStatus
+): Promise<void> {
+  if (addiStatus) {
+    await pool.query(`UPDATE orders SET status = ?, addi_status = ? WHERE reference = ?`, [
+      status,
+      addiStatus,
+      reference,
+    ]);
+  } else {
+    await pool.query(`UPDATE orders SET status = ? WHERE reference = ?`, [status, reference]);
+  }
 }
 
 export async function getOrdersByUserId(userId: number): Promise<OrderRecord[]> {
   const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT id, reference, user_id, customer_email, customer_name, customer_phone, customer_cedula,
             shipping_address, shipping_city, items, subtotal, shipping_cost, total, payment_method,
-            status, created_at, updated_at
+            status, addi_status, created_at, updated_at
      FROM orders
      WHERE user_id = ?
      ORDER BY created_at DESC`,
@@ -113,7 +128,7 @@ export async function getOrdersByUserId(userId: number): Promise<OrderRecord[]> 
 export async function getAllOrders(status?: OrderStatus): Promise<OrderRecord[]> {
   const baseQuery = `SELECT id, reference, user_id, customer_email, customer_name, customer_phone, customer_cedula,
             shipping_address, shipping_city, items, subtotal, shipping_cost, total, payment_method,
-            status, created_at, updated_at
+            status, addi_status, created_at, updated_at
      FROM orders`;
 
   const [rows] = status
@@ -127,7 +142,7 @@ export async function getOrderByReference(reference: string): Promise<OrderRecor
   const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT id, reference, user_id, customer_email, customer_name, customer_phone, customer_cedula,
             shipping_address, shipping_city, items, subtotal, shipping_cost, total, payment_method,
-            status, created_at, updated_at
+            status, addi_status, created_at, updated_at
      FROM orders
      WHERE reference = ?
      LIMIT 1`,
@@ -153,6 +168,7 @@ function mapOrderRow(row: RowDataPacket): OrderRecord {
     total: row.total,
     paymentMethod: row.payment_method,
     status: row.status,
+    addiStatus: row.addi_status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
